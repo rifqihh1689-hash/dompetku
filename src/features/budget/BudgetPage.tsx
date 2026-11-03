@@ -40,7 +40,10 @@ export function BudgetPage({ month, onMonthChange }: BudgetPageProps) {
 
   const handleCopy = async () => {
     const count = await copyBudgets(previousMonth, month)
-    toast({ message: count > 0 ? `${count} anggaran disalin dari ${formatMonthLabel(previousMonth)}.` : 'Tidak ada anggaran baru untuk disalin.', tone: 'info' })
+    toast({
+      message: count > 0 ? `${count} anggaran disalin dari ${formatMonthLabel(previousMonth)}.` : 'Tidak ada anggaran baru untuk disalin.',
+      tone: 'info',
+    })
   }
 
   const handleSubmit = async (categoryId: string, amount: number) => {
@@ -84,11 +87,13 @@ export function BudgetPage({ month, onMonthChange }: BudgetPageProps) {
             <LevelBadge level={totals.level} text={formatPercent(totals.ratio)} />
           </div>
           <p className="text-xl font-bold tabular-nums">
-            {formatRupiah(totals.spent)} <span className="text-sm font-normal text-slate-500 dark:text-slate-400">dari {formatRupiah(totals.limit)}</span>
+            {formatRupiah(totals.spent)}{' '}
+            <span className="text-sm font-normal text-slate-500 dark:text-slate-400">dari {formatRupiah(totals.limit)}</span>
           </p>
           <BudgetProgress ratio={totals.ratio} level={totals.level} label="Total pemakaian anggaran" />
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            {totals.remaining >= 0 ? 'Sisa' : 'Lebih'} <span className="font-semibold tabular-nums">{formatRupiah(Math.abs(totals.remaining))}</span>
+            {totals.remaining >= 0 ? 'Sisa' : 'Lebih'}{' '}
+            <span className="font-semibold tabular-nums">{formatRupiah(Math.abs(totals.remaining))}</span>
           </p>
         </section>
       )}
@@ -117,7 +122,11 @@ export function BudgetPage({ month, onMonthChange }: BudgetPageProps) {
         <ul className="space-y-3">
           {(usages ?? []).map((usage) => (
             <li key={usage.budget.id}>
-              <button type="button" onClick={() => setEditing(usage)} className="card block w-full space-y-2 p-4 text-left transition hover:shadow-md">
+              <button
+                type="button"
+                onClick={() => setEditing(usage)}
+                className="card block w-full space-y-2 p-4 text-left transition hover:shadow-md"
+              >
                 <div className="flex items-center gap-3">
                   <CategoryIcon icon={usage.category.icon} color={usage.category.color} size="sm" />
                   <span className="flex-1 font-medium">{usage.category.name}</span>
@@ -131,7 +140,9 @@ export function BudgetPage({ month, onMonthChange }: BudgetPageProps) {
                   <LevelBadge level={usage.level} text={usage.level === 'safe' ? budgetMessage(usage, formatRupiah) : undefined} />
                   <span className="text-xs text-slate-500 tabular-nums dark:text-slate-400">{formatPercent(usage.ratio)}</span>
                 </div>
-                {usage.level !== 'safe' && <p className="text-xs text-slate-600 dark:text-slate-300">{budgetMessage(usage, formatRupiah)}</p>}
+                {usage.level !== 'safe' && (
+                  <p className="text-xs text-slate-600 dark:text-slate-300">{budgetMessage(usage, formatRupiah)}</p>
+                )}
               </button>
             </li>
           ))}

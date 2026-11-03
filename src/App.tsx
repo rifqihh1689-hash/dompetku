@@ -8,6 +8,8 @@ import { BudgetPage } from './features/budget/BudgetPage'
 import { useBudgetWarnings } from './features/budget/useBudgetWarnings'
 import { DashboardPage } from './features/dashboard/DashboardPage'
 import { RecurringPage } from './features/recurring/RecurringPage'
+import { useTheme } from './features/settings/theme'
+import { ThemeContext } from './features/settings/theme-context'
 import { useRecurringGenerator } from './features/recurring/useRecurringGenerator'
 import { SettingsPage } from './features/settings/SettingsPage'
 import { useTransactionEditor } from './features/transactions/editor-context'
@@ -61,13 +63,16 @@ function EditorWithBudgetWarnings({ children }: { children: ReactNode }) {
 }
 
 export default function App() {
+  const theme = useTheme()
   return (
-    <ToastProvider>
-      <ConfirmProvider>
-        <EditorWithBudgetWarnings>
-          <Shell />
-        </EditorWithBudgetWarnings>
-      </ConfirmProvider>
-    </ToastProvider>
+    <ThemeContext.Provider value={theme}>
+      <ToastProvider>
+        <ConfirmProvider>
+          <EditorWithBudgetWarnings>
+            <Shell />
+          </EditorWithBudgetWarnings>
+        </ConfirmProvider>
+      </ToastProvider>
+    </ThemeContext.Provider>
   )
 }

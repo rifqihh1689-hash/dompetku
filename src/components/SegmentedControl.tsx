@@ -14,7 +14,11 @@ interface SegmentedControlProps<T extends string> {
 /** Tombol pilihan berdampingan (radio group). */
 export function SegmentedControl<T extends string>({ options, value, onChange, label }: SegmentedControlProps<T>) {
   return (
-    <div role="radiogroup" aria-label={label} className="grid auto-cols-fr grid-flow-col gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
+    <div
+      role="radiogroup"
+      aria-label={label}
+      className="grid auto-cols-fr grid-flow-col gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800"
+    >
       {options.map((option) => {
         const active = option.value === value
         return (

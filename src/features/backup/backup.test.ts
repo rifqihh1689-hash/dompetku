@@ -104,7 +104,14 @@ describe('export & import database', () => {
     const kopi = await addCategory({ name: 'Kopi', icon: 'coffee', color: '#78350f', kind: 'expense' })
     await db.transactions.bulkAdd([makeTx({ id: 't1', categoryId: kopi.id }), makeTx({ id: 't2', type: 'income', categoryId: 'cat-gaji' })])
     await setBudget('2026-11', kopi.id, 200_000)
-    await addRecurringRule({ amount: 100_000, type: 'expense', categoryId: 'cat-tagihan', note: 'Internet', dayOfMonth: 10, startMonth: '2026-11' })
+    await addRecurringRule({
+      amount: 100_000,
+      type: 'expense',
+      categoryId: 'cat-tagihan',
+      note: 'Internet',
+      dayOfMonth: 10,
+      startMonth: '2026-11',
+    })
     return kopi
   }
 

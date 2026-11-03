@@ -69,8 +69,5 @@ export function buildRecurringTransaction(rule: RecurringRule, occurrence: Occur
 
 /** Total per bulan dari aturan aktif. */
 export function monthlyRecurringTotals(rules: readonly RecurringRule[]): { income: number; expense: number } {
-  return rules.reduce(
-    (acc, r) => (r.active ? { ...acc, [r.type]: acc[r.type] + r.amount } : acc),
-    { income: 0, expense: 0 },
-  )
+  return rules.reduce((acc, r) => (r.active ? { ...acc, [r.type]: acc[r.type] + r.amount } : acc), { income: 0, expense: 0 })
 }

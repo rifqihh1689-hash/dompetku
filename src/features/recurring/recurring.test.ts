@@ -3,7 +3,14 @@ import { db } from '../../db/db'
 import { resetDatabase } from '../../test/db-utils'
 import type { RecurringRule } from '../../types'
 import { dueOccurrences, monthlyRecurringTotals, nextOccurrence, recurringTransactionId } from './recurring'
-import { addRecurringRule, deleteRecurringRule, generateRecurringTransactions, setRecurringActive, updateRecurringRule, validateRecurringInput } from './repository'
+import {
+  addRecurringRule,
+  deleteRecurringRule,
+  generateRecurringTransactions,
+  setRecurringActive,
+  updateRecurringRule,
+  validateRecurringInput,
+} from './repository'
 
 function rule(partial: Partial<RecurringRule> = {}): RecurringRule {
   return {
@@ -49,7 +56,9 @@ describe('dueOccurrences', () => {
   })
 
   it('bulan mulai yang dimajukan setelah dibuat tetap dihormati', () => {
-    expect(dueOccurrences(rule({ lastGeneratedMonth: '2026-09', startMonth: '2026-12' }), '2026-12-10').map((o) => o.month)).toEqual(['2026-12'])
+    expect(dueOccurrences(rule({ lastGeneratedMonth: '2026-09', startMonth: '2026-12' }), '2026-12-10').map((o) => o.month)).toEqual([
+      '2026-12',
+    ])
   })
 })
 
@@ -77,7 +86,14 @@ describe('monthlyRecurringTotals', () => {
 describe('generateRecurringTransactions', () => {
   beforeEach(resetDatabase)
 
-  const input = { amount: 350_000, type: 'expense' as const, categoryId: 'cat-tagihan', note: 'Listrik', dayOfMonth: 5, startMonth: '2026-09' }
+  const input = {
+    amount: 350_000,
+    type: 'expense' as const,
+    categoryId: 'cat-tagihan',
+    note: 'Listrik',
+    dayOfMonth: 5,
+    startMonth: '2026-09',
+  }
 
   it('membuat transaksi yang jatuh tempo lalu mencatat bulan terakhir', async () => {
     const r = await addRecurringRule(input)

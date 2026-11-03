@@ -32,7 +32,14 @@ function describeRule(rule: RecurringRule, today: string): string {
 }
 
 export function RecurringPage() {
-  const rules = useLiveQuery(() => db.recurring.orderBy('id').toArray().then((list) => list.sort((a, b) => a.dayOfMonth - b.dayOfMonth || a.createdAt - b.createdAt)), [])
+  const rules = useLiveQuery(
+    () =>
+      db.recurring
+        .orderBy('id')
+        .toArray()
+        .then((list) => list.sort((a, b) => a.dayOfMonth - b.dayOfMonth || a.createdAt - b.createdAt)),
+    [],
+  )
   const categories = useCategories() ?? []
   const getCategory = useCategoryLookup()
   const [editing, setEditing] = useState<RecurringRule | 'new' | null>(null)
@@ -128,7 +135,9 @@ export function RecurringPage() {
                     <span className="block truncate text-xs text-slate-500 dark:text-slate-400">
                       Tgl {rule.dayOfMonth} · {describeRule(rule, today)}
                     </span>
-                    <span className={`block text-sm font-semibold tabular-nums ${isIncome ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                    <span
+                      className={`block text-sm font-semibold tabular-nums ${isIncome ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}
+                    >
                       {isIncome ? '+' : '-'}
                       {formatRupiah(rule.amount)}
                     </span>
@@ -152,7 +161,11 @@ export function RecurringPage() {
         </ul>
       )}
 
-      <Modal open={editing !== null} title={editing === 'new' ? 'Transaksi Berulang Baru' : 'Ubah Transaksi Berulang'} onClose={() => setEditing(null)}>
+      <Modal
+        open={editing !== null}
+        title={editing === 'new' ? 'Transaksi Berulang Baru' : 'Ubah Transaksi Berulang'}
+        onClose={() => setEditing(null)}
+      >
         {editing !== null && (
           <RecurringForm
             key={editing === 'new' ? 'new' : editing.id}

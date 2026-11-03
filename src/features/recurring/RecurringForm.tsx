@@ -98,7 +98,9 @@ export function RecurringForm({ categories, initial, onSubmit, onDelete }: Recur
           ))}
         </select>
         {dayOfMonth > 28 && (
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Pada bulan yang lebih pendek, dipakai tanggal terakhir bulan itu.</p>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            Pada bulan yang lebih pendek, dipakai tanggal terakhir bulan itu.
+          </p>
         )}
       </div>
       <div className="grid grid-cols-2 gap-3">

@@ -12,6 +12,7 @@ import { useTransactionEditor } from '../transactions/editor-context'
 import { TransactionItem } from '../transactions/TransactionItem'
 import { formatDateShort } from '../../lib/date'
 import { BudgetAlerts } from '../budget/BudgetAlerts'
+import { ThemeToggle } from '../settings/ThemeToggle'
 import { BalanceCard } from './BalanceCard'
 import { CategoryBreakdown } from './CategoryBreakdown'
 import { DailyTrendCard } from './DailyTrendCard'
@@ -46,7 +47,7 @@ export function DashboardPage({ month, onMonthChange }: DashboardPageProps) {
 
   return (
     <div className="space-y-4">
-      <PageHeader title="Dompetku" subtitle="Ringkasan keuangan bulanan" />
+      <PageHeader title="Dompetku" subtitle="Ringkasan keuangan bulanan" actions={<ThemeToggle />} />
       <MonthSwitcher month={month} onChange={onMonthChange} />
       <BalanceCard summary={summary} totalBalance={totalBalance} />
       <BudgetAlerts month={month} />
@@ -78,7 +79,12 @@ export function DashboardPage({ month, onMonthChange }: DashboardPageProps) {
           <ul className="divide-y divide-slate-100 dark:divide-slate-800">
             {list.slice(0, 5).map((tx) => (
               <li key={tx.id}>
-                <TransactionItem transaction={tx} category={getCategory(tx.categoryId)} onSelect={openEdit} meta={formatDateShort(tx.date)} />
+                <TransactionItem
+                  transaction={tx}
+                  category={getCategory(tx.categoryId)}
+                  onSelect={openEdit}
+                  meta={formatDateShort(tx.date)}
+                />
               </li>
             ))}
           </ul>

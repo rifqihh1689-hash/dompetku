@@ -103,7 +103,11 @@ export function TransactionForm({ categories, initial, defaults, onSubmit, onDel
       </div>
 
       {error && (
-        <p id={ids.error} role="alert" className="rounded-xl bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
+        <p
+          id={ids.error}
+          role="alert"
+          className="rounded-xl bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:bg-rose-950/50 dark:text-rose-300"
+        >
           {error}
         </p>
       )}

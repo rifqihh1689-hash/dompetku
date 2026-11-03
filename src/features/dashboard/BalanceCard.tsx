@@ -10,7 +10,10 @@ interface BalanceCardProps {
 
 export function BalanceCard({ summary, totalBalance }: BalanceCardProps) {
   return (
-    <section aria-label="Ringkasan bulan ini" className="rounded-3xl bg-gradient-to-br from-emerald-600 to-teal-700 p-5 text-white shadow-lg shadow-emerald-700/20">
+    <section
+      aria-label="Ringkasan bulan ini"
+      className="rounded-3xl bg-gradient-to-br from-emerald-600 to-teal-700 p-5 text-white shadow-lg shadow-emerald-700/20"
+    >
       <p className="text-sm text-emerald-50/90">Saldo bulan ini</p>
       <p className="mt-1 text-3xl font-bold tracking-tight tabular-nums" data-testid="saldo-bulan">
         {formatRupiah(summary.balance)}

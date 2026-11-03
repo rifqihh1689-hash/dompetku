@@ -40,7 +40,10 @@ export function parseAmount(input: string): number {
 
 /** Memformat teks masukan saat diketik: "1250000" → "1.250.000". Kosong tetap kosong. */
 export function formatAmountInput(input: string): string {
-  const digits = input.replace(/\D/g, '').replace(/^0+(?=\d)/, '').slice(0, MAX_AMOUNT_DIGITS)
+  const digits = input
+    .replace(/\D/g, '')
+    .replace(/^0+(?=\d)/, '')
+    .slice(0, MAX_AMOUNT_DIGITS)
   return digits === '' ? '' : formatThousands(Number(digits))
 }
 

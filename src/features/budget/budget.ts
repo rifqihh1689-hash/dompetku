@@ -91,7 +91,10 @@ export function budgetAlerts(usages: readonly BudgetUsage[]): BudgetUsage[] {
 }
 
 /** Pesan status anggaran dalam Bahasa Indonesia. */
-export function budgetMessage(usage: Pick<BudgetUsage, 'level' | 'ratio' | 'remaining' | 'category'>, formatMoney: (n: number) => string): string {
+export function budgetMessage(
+  usage: Pick<BudgetUsage, 'level' | 'ratio' | 'remaining' | 'category'>,
+  formatMoney: (n: number) => string,
+): string {
   const pct = Math.round(usage.ratio * 100)
   switch (usage.level) {
     case 'over':

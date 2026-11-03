@@ -89,7 +89,9 @@ export function CategoryForm({ initial, onSubmit, onDelete }: CategoryFormProps)
                 title={label}
                 onClick={() => setIcon(key)}
                 className={`flex aspect-square items-center justify-center rounded-lg transition ${
-                  selected ? 'text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                  selected
+                    ? 'text-white'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                 }`}
                 style={selected ? { backgroundColor: color } : undefined}
               >

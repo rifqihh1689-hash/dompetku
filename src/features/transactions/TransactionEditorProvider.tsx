@@ -9,7 +9,8 @@ import { TransactionEditorContext, type TransactionEditor } from './editor-conte
 import { addTransaction, deleteTransaction, updateTransaction } from './repository'
 import { TransactionForm } from './TransactionForm'
 
-type EditorState = { mode: 'new'; defaults?: Partial<TransactionInput>; key: number } | { mode: 'edit'; transaction: Transaction; key: number }
+type EditorState =
+  { mode: 'new'; defaults?: Partial<TransactionInput>; key: number } | { mode: 'edit'; transaction: Transaction; key: number }
 
 interface TransactionEditorProviderProps {
   children: ReactNode

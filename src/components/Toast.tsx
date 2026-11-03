@@ -48,7 +48,9 @@ function ToastView({ toast, onDismiss }: { toast: ToastItem; onDismiss: (id: num
   }, [toast.id, toast.duration, onDismiss])
 
   return (
-    <div className={`animate-toast-in pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-2xl px-4 py-3 text-sm shadow-lg ${className}`}>
+    <div
+      className={`animate-toast-in pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-2xl px-4 py-3 text-sm shadow-lg ${className}`}
+    >
       <Icon size={18} className="shrink-0" aria-hidden="true" />
       <p className="flex-1">{toast.message}</p>
       {toast.action && (

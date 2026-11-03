@@ -83,7 +83,12 @@ export function HistoryPage() {
             <label htmlFor={ids.category} className="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">
               Kategori
             </label>
-            <select id={ids.category} value={filter.categoryId} onChange={(e) => update({ categoryId: e.target.value })} className="field px-2 text-sm">
+            <select
+              id={ids.category}
+              value={filter.categoryId}
+              onChange={(e) => update({ categoryId: e.target.value })}
+              className="field px-2 text-sm"
+            >
               <option value="all">Semua</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -118,7 +123,11 @@ export function HistoryPage() {
             <span className="text-rose-600 dark:text-rose-400">-{formatRupiah(totals.expense)}</span>
           </p>
           {active && (
-            <button type="button" onClick={() => update(EMPTY_FILTER)} className="inline-flex items-center gap-1 font-medium text-emerald-600 dark:text-emerald-400">
+            <button
+              type="button"
+              onClick={() => update(EMPTY_FILTER)}
+              className="inline-flex items-center gap-1 font-medium text-emerald-600 dark:text-emerald-400"
+            >
               <X size={14} aria-hidden="true" /> Hapus filter
             </button>
           )}

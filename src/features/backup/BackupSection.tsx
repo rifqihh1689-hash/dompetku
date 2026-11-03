@@ -8,7 +8,16 @@ import { db } from '../../db/db'
 import { downloadTextFile } from '../../lib/download'
 import { formatMonthLabel } from '../../lib/date'
 import { UNKNOWN_CATEGORY } from '../categories/defaults'
-import { backupFileName, CSV_BOM, csvFileName, parseBackup, serializeBackup, transactionsToCsv, type BackupFile, type CsvDelimiter } from './backup'
+import {
+  backupFileName,
+  CSV_BOM,
+  csvFileName,
+  parseBackup,
+  serializeBackup,
+  transactionsToCsv,
+  type BackupFile,
+  type CsvDelimiter,
+} from './backup'
 import { clearAllData, exportBackup, importBackup, type ImportMode } from './repository'
 
 function formatExportedAt(iso: string): string {
@@ -86,7 +95,8 @@ export function BackupSection() {
   const handleClear = async () => {
     const ok = await confirm({
       title: 'Hapus semua data?',
-      message: 'Semua transaksi, anggaran, transaksi berulang, dan kategori kustom akan dihapus permanen. Sebaiknya buat backup terlebih dahulu.',
+      message:
+        'Semua transaksi, anggaran, transaksi berulang, dan kategori kustom akan dihapus permanen. Sebaiknya buat backup terlebih dahulu.',
       confirmLabel: 'Hapus semua',
       danger: true,
     })
@@ -113,7 +123,14 @@ export function BackupSection() {
           <button type="button" className="btn-secondary" onClick={() => fileInput.current?.click()}>
             <Upload size={16} aria-hidden="true" /> Import JSON
           </button>
-          <input ref={fileInput} type="file" accept="application/json,.json" className="hidden" onChange={handleFile} data-testid="import-input" />
+          <input
+            ref={fileInput}
+            type="file"
+            accept="application/json,.json"
+            className="hidden"
+            onChange={handleFile}
+            data-testid="import-input"
+          />
         </div>
 
         <div className="space-y-2 border-t border-slate-100 pt-4 dark:border-slate-800">
@@ -181,7 +198,8 @@ export function BackupSection() {
                 Ganti semua data
               </button>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                “Gabungkan” menambahkan isi backup; data dengan ID yang sama akan diperbarui. “Ganti semua” menghapus data saat ini terlebih dahulu.
+                “Gabungkan” menambahkan isi backup; data dengan ID yang sama akan diperbarui. “Ganti semua” menghapus data saat ini terlebih
+                dahulu.
               </p>
             </div>
           </div>

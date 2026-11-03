@@ -19,7 +19,7 @@ export function CategoryIcon({ icon, color, size = 'md', className = '' }: Categ
   const s = SIZES[size]
   return (
     <span
-      className={`inline-flex shrink-0 items-center justify-center rounded-full ${s.box} ${className}`}
+      className={`inline-flex shrink-0 items-center justify-center rounded-full dark:brightness-[1.35] ${s.box} ${className}`}
       style={{ backgroundColor: `${color}22`, color }}
       aria-hidden="true"
     >

@@ -25,7 +25,11 @@ export function MonthSwitcher({ month, onChange }: MonthSwitcherProps) {
           {formatMonthLabel(month)}
         </span>
         {!isCurrent && (
-          <button type="button" onClick={() => onChange(currentMonth())} className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
+          <button
+            type="button"
+            onClick={() => onChange(currentMonth())}
+            className="text-xs font-medium text-emerald-600 dark:text-emerald-400"
+          >
             Kembali ke bulan ini
           </button>
         )}

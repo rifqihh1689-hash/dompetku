@@ -29,7 +29,9 @@ export function TransactionItem({ transaction, category, onSelect, meta }: Trans
           {transaction.recurringId && <Repeat size={12} aria-label="Transaksi berulang" />}
         </span>
       </span>
-      <span className={`shrink-0 font-semibold tabular-nums ${isIncome ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+      <span
+        className={`shrink-0 font-semibold tabular-nums ${isIncome ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}
+      >
         {isIncome ? '+' : '-'}
         {formatRupiah(transaction.amount)}
       </span>
