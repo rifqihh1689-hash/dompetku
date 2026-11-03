@@ -4,10 +4,11 @@ import { useConfirm } from '../../components/confirm-context'
 import { Modal } from '../../components/Modal'
 import { MonthSelect } from '../../components/MonthSelect'
 import { useToast } from '../../components/toast-context'
-import { db } from '../../db/db'
+import { cloudEnabled, db } from '../../db/db'
 import { downloadTextFile } from '../../lib/download'
 import { formatMonthLabel } from '../../lib/date'
 import { UNKNOWN_CATEGORY } from '../categories/defaults'
+import { getCategories } from '../categories/repository'
 import {
   backupFileName,
   CSV_BOM,
@@ -19,6 +20,13 @@ import {
   type CsvDelimiter,
 } from './backup'
 import { clearAllData, exportBackup, importBackup, type ImportMode } from './repository'
+
+/** Apakah pengguna sedang masuk sinkronisasi (perubahan juga berlaku di semua perangkat). */
+function isSyncing(): boolean {
+  return cloudEnabled && db.cloud.currentUser.value?.isLoggedIn === true
+}
+
+const SYNC_WARNING = ' Karena kamu sedang masuk sinkronisasi, ini juga berlaku untuk data di cloud dan semua perangkatmu.'
 
 function formatExportedAt(iso: string): string {
   const date = new Date(iso)
@@ -45,7 +53,7 @@ export function BackupSection() {
     const month = csvMonth || null
     const [transactions, categories] = await Promise.all([
       month ? db.transactions.where('date').between(`${month}-01`, `${month}-31`, true, true).toArray() : db.transactions.toArray(),
-      db.categories.toArray(),
+      getCategories(),
     ])
     if (transactions.length === 0) {
       toast({ message: 'Tidak ada transaksi untuk diekspor.', tone: 'warning' })
@@ -74,7 +82,9 @@ export function BackupSection() {
     if (mode === 'replace') {
       const ok = await confirm({
         title: 'Ganti semua data?',
-        message: 'Semua data di perangkat ini akan dihapus dan diganti dengan isi backup. Tindakan ini tidak dapat dibatalkan.',
+        message:
+          'Semua data di perangkat ini akan dihapus dan diganti dengan isi backup. Tindakan ini tidak dapat dibatalkan.' +
+          (isSyncing() ? SYNC_WARNING : ''),
         confirmLabel: 'Ganti semua',
         danger: true,
       })

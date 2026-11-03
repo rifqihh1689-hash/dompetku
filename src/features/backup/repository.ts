@@ -1,29 +1,31 @@
 import { db } from '../../db/db'
-import { DEFAULT_CATEGORIES, FALLBACK_CATEGORY_ID } from '../categories/defaults'
 import { createBackup, type BackupData, type BackupFile } from './backup'
 
 export type ImportMode = 'replace' | 'merge'
 
 const TABLES = () => [db.categories, db.transactions, db.budgets, db.recurring]
 
-export async function exportBackup(now: Date = new Date()): Promise<BackupFile> {
-  return db.transaction('r', TABLES(), async () => {
-    const data: BackupData = {
-      categories: await db.categories.toArray(),
-      transactions: await db.transactions.orderBy('date').toArray(),
-      budgets: await db.budgets.toArray(),
-      recurring: await db.recurring.toArray(),
-    }
-    return createBackup(data, now)
+/** Properti tambahan dari sinkronisasi (Dexie Cloud) yang tidak perlu ikut di file backup. */
+const SYNC_PROPS = ['owner', 'realmId', '$ts'] as const
+
+function stripSyncProps<T extends object>(rows: T[]): T[] {
+  return rows.map((row) => {
+    const copy = { ...row } as Record<string, unknown>
+    for (const prop of SYNC_PROPS) delete copy[prop]
+    return copy as T
   })
 }
 
-/** Memastikan kategori cadangan "Lainnya" selalu ada. */
-async function ensureFallbackCategory(): Promise<void> {
-  if (!(await db.categories.get(FALLBACK_CATEGORY_ID))) {
-    const fallback = DEFAULT_CATEGORIES.find((c) => c.id === FALLBACK_CATEGORY_ID)
-    if (fallback) await db.categories.add({ ...fallback })
-  }
+export async function exportBackup(now: Date = new Date()): Promise<BackupFile> {
+  return db.transaction('r', TABLES(), async () => {
+    const data: BackupData = {
+      categories: stripSyncProps(await db.categories.toArray()),
+      transactions: stripSyncProps(await db.transactions.orderBy('date').toArray()),
+      budgets: stripSyncProps(await db.budgets.toArray()),
+      recurring: stripSyncProps(await db.recurring.toArray()),
+    }
+    return createBackup(data, now)
+  })
 }
 
 /**
@@ -41,14 +43,12 @@ export async function importBackup(backup: BackupFile, mode: ImportMode): Promis
     await db.transactions.bulkPut(transactions)
     await db.budgets.bulkPut(budgets)
     await db.recurring.bulkPut(recurring)
-    await ensureFallbackCategory()
   })
 }
 
-/** Menghapus seluruh data dan mengembalikan kategori bawaan. */
+/** Menghapus seluruh data (kategori bawaan kembali ke kondisi awal). */
 export async function clearAllData(): Promise<void> {
   await db.transaction('rw', TABLES(), async () => {
     await Promise.all(TABLES().map((table) => table.clear()))
-    await db.categories.bulkAdd(DEFAULT_CATEGORIES.map((c) => ({ ...c })))
   })
 }

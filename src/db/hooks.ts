@@ -1,16 +1,13 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useMemo } from 'react'
 import { UNKNOWN_CATEGORY } from '../features/categories/defaults'
+import { mergeCategories } from '../features/categories/merge'
 import type { Category, MonthKey, Transaction } from '../types'
 import { db } from './db'
 
-/** Semua kategori, diurutkan sesuai waktu dibuat. `undefined` selama memuat. */
+/** Semua kategori (bawaan + buatan pengguna), diurutkan sesuai waktu dibuat. `undefined` selama memuat. */
 export function useCategories(): Category[] | undefined {
-  return useLiveQuery(() => db.categories.orderBy('id').toArray().then(sortCategories), [])
-}
-
-export function sortCategories(categories: Category[]): Category[] {
-  return [...categories].sort((a, b) => a.createdAt - b.createdAt || a.name.localeCompare(b.name))
+  return useLiveQuery(() => db.categories.toArray().then(mergeCategories), [])
 }
 
 /** Peta ID → kategori, dengan fallback "Tanpa kategori". */

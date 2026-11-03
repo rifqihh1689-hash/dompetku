@@ -21,6 +21,8 @@ export interface Category {
   /** Kategori bawaan aplikasi. */
   builtIn: boolean
   createdAt: number
+  /** Penanda kategori bawaan yang disembunyikan/dihapus pengguna (hanya di database). */
+  deleted?: boolean
 }
 
 export interface Transaction {

@@ -22,7 +22,7 @@ describe('TransactionForm', () => {
     expect(onSubmit).toHaveBeenCalledWith({
       type: 'expense',
       amount: 1250000,
-      categoryId: 'cat-makan',
+      categoryId: '#cat-makan',
       date: '2026-11-03',
       note: 'Belanja bulanan',
     })
@@ -55,7 +55,7 @@ describe('TransactionForm', () => {
   })
 
   it('mengisi nilai awal saat mengubah transaksi', () => {
-    const tx = makeTx({ amount: 75000, categoryId: 'cat-hiburan', note: 'Bioskop', date: '2026-10-01' })
+    const tx = makeTx({ amount: 75000, categoryId: '#cat-hiburan', note: 'Bioskop', date: '2026-10-01' })
     render(<TransactionForm categories={DEFAULT_CATEGORIES} initial={tx} onSubmit={vi.fn()} onDelete={vi.fn()} />)
     expect(screen.getByLabelText('Jumlah')).toHaveValue('75.000')
     expect(screen.getByLabelText(/Catatan/)).toHaveValue('Bioskop')

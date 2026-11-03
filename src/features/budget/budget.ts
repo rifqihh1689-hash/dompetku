@@ -11,8 +11,13 @@ export const WARNING_RATIO = 0.8
  */
 export type BudgetLevel = 'safe' | 'warning' | 'over'
 
+/**
+ * ID anggaran deterministik: satu anggaran per kategori per bulan.
+ * Diawali "#" agar unik per pengguna di server sinkronisasi, dan perangkat yang
+ * membuat anggaran yang sama secara offline akan tergabung, bukan dobel.
+ */
 export function budgetId(month: MonthKey, categoryId: string): string {
-  return `${month}:${categoryId}`
+  return `#${month}:${categoryId}`
 }
 
 export function budgetLevel(spent: number, limit: number): BudgetLevel {

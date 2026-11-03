@@ -10,7 +10,7 @@ export function makeTx(partial: Partial<Transaction> = {}): Transaction {
     id: `tx-${counter}`,
     amount: 10000,
     type: 'expense',
-    categoryId: 'cat-makan',
+    categoryId: '#cat-makan',
     date: '2026-11-03',
     note: '',
     createdAt: counter,

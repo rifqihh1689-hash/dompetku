@@ -17,7 +17,7 @@ function rule(partial: Partial<RecurringRule> = {}): RecurringRule {
     id: 'r1',
     amount: 350_000,
     type: 'expense',
-    categoryId: 'cat-tagihan',
+    categoryId: '#cat-tagihan',
     note: 'Listrik',
     dayOfMonth: 5,
     startMonth: '2026-09',
@@ -89,7 +89,7 @@ describe('generateRecurringTransactions', () => {
   const input = {
     amount: 350_000,
     type: 'expense' as const,
-    categoryId: 'cat-tagihan',
+    categoryId: '#cat-tagihan',
     note: 'Listrik',
     dayOfMonth: 5,
     startMonth: '2026-09',

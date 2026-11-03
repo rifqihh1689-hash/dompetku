@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useToast } from '../../components/toast-context'
+import { cloudEnabled, db } from '../../db/db'
 import { generateRecurringTransactions } from './repository'
 
 /**
@@ -25,9 +26,12 @@ export function useRecurringGenerator(): void {
       if (document.visibilityState === 'visible') void run()
     }
     document.addEventListener('visibilitychange', onVisible)
+    // Setelah sinkronisasi, aturan dari perangkat lain mungkin baru tiba.
+    const subscription = cloudEnabled ? db.cloud.events.syncComplete.subscribe(() => void run()) : undefined
     return () => {
       cancelled = true
       document.removeEventListener('visibilitychange', onVisible)
+      subscription?.unsubscribe()
     }
   }, [toast])
 }
