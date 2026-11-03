@@ -5,6 +5,37 @@ import { createPortal } from 'react-dom'
 /** Tumpukan modal yang terbuka — hanya modal teratas yang merespons tombol Escape. */
 const openStack: symbol[] = []
 
+/**
+ * Elemen terakhir yang difokus di luar modal (mis. tombol pembuka), untuk dikembalikan fokusnya
+ * saat modal ditutup. Dilacak global karena isi modal bisa langsung mengambil fokus (autoFocus).
+ */
+let lastFocusOutside: HTMLElement | null = null
+if (typeof document !== 'undefined') {
+  document.addEventListener('focusin', (event) => {
+    const target = event.target
+    if (target instanceof HTMLElement && !target.closest('[aria-modal="true"]')) lastFocusOutside = target
+  })
+}
+
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+
+/** Menjaga fokus keyboard (Tab / Shift+Tab) tetap di dalam modal. */
+function trapFocus(event: KeyboardEvent, panel: HTMLElement) {
+  const items = [...panel.querySelectorAll<HTMLElement>(FOCUSABLE)].filter((el) => el.getClientRects().length > 0)
+  if (items.length === 0) return
+  const first = items[0]
+  const last = items[items.length - 1]
+  const active = document.activeElement
+  if (event.shiftKey && (active === first || active === panel)) {
+    event.preventDefault()
+    last.focus()
+  } else if (!event.shiftKey && active === last) {
+    event.preventDefault()
+    first.focus()
+  }
+}
+
 interface ModalProps {
   open: boolean
   title: string
@@ -26,15 +57,20 @@ export function Modal({ open, title, onClose, children, variant = 'sheet' }: Mod
     if (!open) return
     const token = Symbol('modal')
     openStack.push(token)
-    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    const active = document.activeElement
+    const previousFocus = active instanceof HTMLElement && !panelRef.current?.contains(active) ? active : lastFocusOutside
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    panelRef.current?.focus()
+    // Jangan ambil alih fokus bila isi modal sudah memfokuskan input (autoFocus).
+    if (!panelRef.current?.contains(document.activeElement)) panelRef.current?.focus()
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && openStack[openStack.length - 1] === token) {
+      if (openStack[openStack.length - 1] !== token) return
+      if (event.key === 'Escape') {
         event.stopPropagation()
         onCloseRef.current()
+      } else if (event.key === 'Tab' && panelRef.current) {
+        trapFocus(event, panelRef.current)
       }
     }
     document.addEventListener('keydown', onKeyDown)
@@ -42,7 +78,7 @@ export function Modal({ open, title, onClose, children, variant = 'sheet' }: Mod
       document.removeEventListener('keydown', onKeyDown)
       openStack.splice(openStack.indexOf(token), 1)
       document.body.style.overflow = previousOverflow
-      previousFocus?.focus()
+      if (previousFocus?.isConnected) previousFocus.focus()
     }
   }, [open])
 
