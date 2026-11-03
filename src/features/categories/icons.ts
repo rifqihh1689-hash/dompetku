@@ -74,24 +74,27 @@ export const CATEGORY_ICONS: Record<string, { label: string; Icon: LucideIcon }>
 
 export const CATEGORY_ICON_KEYS = Object.keys(CATEGORY_ICONS)
 
-/** Pilihan warna kategori. */
+/**
+ * Pilihan warna kategori. Delapan warna pertama adalah palet kategorikal yang sudah
+ * divalidasi agar mudah dibedakan (termasuk bagi penderita buta warna) pada grafik.
+ */
 export const CATEGORY_COLORS = [
-  '#ef4444',
-  '#f97316',
-  '#f59e0b',
-  '#eab308',
-  '#84cc16',
-  '#22c55e',
-  '#10b981',
-  '#14b8a6',
-  '#06b6d4',
-  '#0ea5e9',
-  '#3b82f6',
-  '#6366f1',
-  '#8b5cf6',
-  '#a855f7',
-  '#d946ef',
-  '#ec4899',
-  '#f43f5e',
+  '#2a78d6',
+  '#eb6834',
+  '#1baf7a',
+  '#eda100',
+  '#e87ba4',
+  '#008300',
+  '#6250d6',
+  '#e34948',
+  '#0891b2',
+  '#a16207',
+  '#be185d',
+  '#7c3aed',
+  '#65a30d',
+  '#0f766e',
+  '#c2410c',
+  '#1e40af',
+  '#9f1239',
   '#64748b',
 ] as const

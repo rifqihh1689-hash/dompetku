@@ -101,3 +101,13 @@ input[type='number']::-webkit-inner-spin-button {
 @utility label {
   @apply mb-1.5 block text-sm font-medium text-slate-600 dark:text-slate-300;
 }
+
+/* Warna grafik (dipilih terpisah untuk mode terang & gelap). */
+:root {
+  --chart-bar: #2a78d6;
+  --chart-surface: #ffffff;
+}
+:root.dark {
+  --chart-bar: #3987e5;
+  --chart-surface: #0f172a;
+}
