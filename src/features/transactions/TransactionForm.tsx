@@ -5,14 +5,10 @@ import { SegmentedControl } from '../../components/SegmentedControl'
 import { todayISO } from '../../lib/date'
 import { formatThousands, parseAmount } from '../../lib/format'
 import type { Category, Transaction, TransactionInput, TransactionType } from '../../types'
-import { CategoryIcon } from '../categories/CategoryIcon'
+import { CategoryPicker } from '../categories/CategoryPicker'
 import { categoryMatchesType } from '../categories/repository'
+import { TYPE_OPTIONS } from './constants'
 import { validateTransactionInput } from './repository'
-
-export const TYPE_OPTIONS = [
-  { value: 'expense', label: 'Pengeluaran', activeClassName: 'bg-rose-600 text-white shadow-sm' },
-  { value: 'income', label: 'Pemasukan', activeClassName: 'bg-emerald-600 text-white shadow-sm' },
-] as const satisfies readonly { value: TransactionType; label: string; activeClassName: string }[]
 
 interface TransactionFormProps {
   categories: readonly Category[]
@@ -33,7 +29,7 @@ export function TransactionForm({ categories, initial, defaults, onSubmit, onDel
   const [note, setNote] = useState(start.note ?? '')
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
-  const ids = { amount: useId(), date: useId(), note: useId(), error: useId(), category: useId() }
+  const ids = { amount: useId(), date: useId(), note: useId(), error: useId() }
 
   const available = categories.filter((c) => categoryMatchesType(c, type))
 
@@ -81,33 +77,7 @@ export function TransactionForm({ categories, initial, defaults, onSubmit, onDel
         />
       </div>
 
-      <fieldset>
-        <legend id={ids.category} className="label">
-          Kategori
-        </legend>
-        <div role="radiogroup" aria-labelledby={ids.category} className="grid grid-cols-4 gap-2">
-          {available.map((category) => {
-            const selected = category.id === categoryId
-            return (
-              <button
-                key={category.id}
-                type="button"
-                role="radio"
-                aria-checked={selected}
-                onClick={() => setCategoryId(category.id)}
-                className={`flex flex-col items-center gap-1 rounded-xl border px-1 py-2 text-center text-[11px] leading-tight font-medium transition ${
-                  selected
-                    ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-500/30 dark:bg-emerald-950/40'
-                    : 'border-slate-200 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800'
-                }`}
-              >
-                <CategoryIcon icon={category.icon} color={category.color} size="sm" />
-                <span className="line-clamp-1 w-full break-all">{category.name}</span>
-              </button>
-            )
-          })}
-        </div>
-      </fieldset>
+      <CategoryPicker categories={available} value={categoryId} onChange={setCategoryId} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>

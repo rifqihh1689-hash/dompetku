@@ -1,13 +1,14 @@
 import { useState, type ReactNode } from 'react'
 import { useRoute, type Route } from './app/router'
 import { BottomNav } from './components/BottomNav'
-import { ComingSoon } from './components/ComingSoon'
 import { ConfirmProvider } from './components/ConfirmProvider'
 import { Fab } from './components/Fab'
 import { ToastProvider } from './components/Toast'
 import { BudgetPage } from './features/budget/BudgetPage'
 import { useBudgetWarnings } from './features/budget/useBudgetWarnings'
 import { DashboardPage } from './features/dashboard/DashboardPage'
+import { RecurringPage } from './features/recurring/RecurringPage'
+import { useRecurringGenerator } from './features/recurring/useRecurringGenerator'
 import { SettingsPage } from './features/settings/SettingsPage'
 import { useTransactionEditor } from './features/transactions/editor-context'
 import { HistoryPage } from './features/transactions/HistoryPage'
@@ -30,7 +31,7 @@ function Page({ route, month, onMonthChange }: PageProps) {
     case 'anggaran':
       return <BudgetPage month={month} onMonthChange={onMonthChange} />
     case 'berulang':
-      return <ComingSoon title="Transaksi Berulang" />
+      return <RecurringPage />
     case 'pengaturan':
       return <SettingsPage />
   }
@@ -41,6 +42,7 @@ function Shell() {
   // Bulan terpilih dibagi antara Beranda & Anggaran agar konsisten saat berpindah tab.
   const [month, setMonth] = useState<MonthKey>(() => currentMonth())
   const { openNew } = useTransactionEditor()
+  useRecurringGenerator()
   return (
     <>
       <main className="mx-auto min-h-dvh max-w-lg px-4 pt-5 pb-[calc(9rem+env(safe-area-inset-bottom))]">
