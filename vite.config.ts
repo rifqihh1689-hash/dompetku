@@ -58,6 +58,10 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     css: false,
     restoreMocks: true,
+    coverage: {
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: ['src/**/*.test.{ts,tsx}', 'src/test/**', 'src/main.tsx', 'src/vite-env.d.ts'],
+    },
     alias: {
       // Modul virtual PWA hanya ada saat build; di tes diganti tiruan.
       'virtual:pwa-register/react': fileURLToPath(new URL('./src/test/pwa-register-mock.ts', import.meta.url)),

@@ -9,6 +9,7 @@ export function Fab({ onClick }: { onClick: () => void }) {
           type="button"
           onClick={onClick}
           aria-label="Tambah transaksi"
+          data-testid="fab"
           className="pointer-events-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-600 text-white shadow-lg shadow-emerald-600/30 transition hover:bg-emerald-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 active:scale-95"
         >
           <Plus size={28} strokeWidth={2.5} aria-hidden="true" />
