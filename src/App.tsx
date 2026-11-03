@@ -7,6 +7,7 @@ import { ToastProvider } from './components/Toast'
 import { BudgetPage } from './features/budget/BudgetPage'
 import { useBudgetWarnings } from './features/budget/useBudgetWarnings'
 import { DashboardPage } from './features/dashboard/DashboardPage'
+import { PwaUpdater } from './features/pwa/PwaUpdater'
 import { RecurringPage } from './features/recurring/RecurringPage'
 import { useTheme } from './features/settings/theme'
 import { ThemeContext } from './features/settings/theme-context'
@@ -52,6 +53,7 @@ function Shell() {
       </main>
       {route !== 'pengaturan' && <Fab onClick={() => openNew()} />}
       <BottomNav active={route} />
+      <PwaUpdater />
     </>
   )
 }
