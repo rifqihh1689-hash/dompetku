@@ -1,0 +1,125 @@
+import {
+  Baby,
+  Banknote,
+  BookOpen,
+  Briefcase,
+  Bus,
+  Car,
+  Clapperboard,
+  Coffee,
+  Dumbbell,
+  Ellipsis,
+  Fuel,
+  Gamepad2,
+  Gift,
+  GraduationCap,
+  HandCoins,
+  Headphones,
+  HeartPulse,
+  House,
+  Laptop,
+  PawPrint,
+  PiggyBank,
+  Pill,
+  Plane,
+  Receipt,
+  Shirt,
+  ShoppingBag,
+  Smartphone,
+  Tag,
+  TrendingUp,
+  Utensils,
+  Wallet,
+  Wifi,
+  Zap,
+  type LucideIcon,
+} from 'lucide-react'
+
+/** Daftar ikon yang bisa dipilih untuk kategori. Kunci disimpan di database. */
+export const CATEGORY_ICONS: Record<string, { label: string; Icon: LucideIcon }> = {
+  utensils: { label: 'Makanan', Icon: Utensils },
+  coffee: { label: 'Kopi', Icon: Coffee },
+  car: { label: 'Mobil', Icon: Car },
+  bus: { label: 'Bus', Icon: Bus },
+  fuel: { label: 'Bensin', Icon: Fuel },
+  plane: { label: 'Perjalanan', Icon: Plane },
+  'shopping-bag': { label: 'Belanja', Icon: ShoppingBag },
+  shirt: { label: 'Pakaian', Icon: Shirt },
+  receipt: { label: 'Tagihan', Icon: Receipt },
+  zap: { label: 'Listrik', Icon: Zap },
+  wifi: { label: 'Internet', Icon: Wifi },
+  smartphone: { label: 'Pulsa', Icon: Smartphone },
+  house: { label: 'Rumah', Icon: House },
+  clapperboard: { label: 'Hiburan', Icon: Clapperboard },
+  gamepad: { label: 'Game', Icon: Gamepad2 },
+  headphones: { label: 'Musik', Icon: Headphones },
+  'heart-pulse': { label: 'Kesehatan', Icon: HeartPulse },
+  pill: { label: 'Obat', Icon: Pill },
+  dumbbell: { label: 'Olahraga', Icon: Dumbbell },
+  'graduation-cap': { label: 'Pendidikan', Icon: GraduationCap },
+  book: { label: 'Buku', Icon: BookOpen },
+  baby: { label: 'Anak', Icon: Baby },
+  'paw-print': { label: 'Hewan', Icon: PawPrint },
+  gift: { label: 'Hadiah', Icon: Gift },
+  laptop: { label: 'Elektronik', Icon: Laptop },
+  wallet: { label: 'Dompet', Icon: Wallet },
+  banknote: { label: 'Uang', Icon: Banknote },
+  briefcase: { label: 'Kerja', Icon: Briefcase },
+  'hand-coins': { label: 'Bonus', Icon: HandCoins },
+  'trending-up': { label: 'Investasi', Icon: TrendingUp },
+  'piggy-bank': { label: 'Tabungan', Icon: PiggyBank },
+  tag: { label: 'Label', Icon: Tag },
+  ellipsis: { label: 'Lainnya', Icon: Ellipsis },
+}
+
+export const CATEGORY_ICON_KEYS = Object.keys(CATEGORY_ICONS)
+
+/** Pilihan warna kategori. */
+export const CATEGORY_COLORS = [
+  '#ef4444',
+  '#f97316',
+  '#f59e0b',
+  '#eab308',
+  '#84cc16',
+  '#22c55e',
+  '#10b981',
+  '#14b8a6',
+  '#06b6d4',
+  '#0ea5e9',
+  '#3b82f6',
+  '#6366f1',
+  '#8b5cf6',
+  '#a855f7',
+  '#d946ef',
+  '#ec4899',
+  '#f43f5e',
+  '#64748b',
+] as const
+
+interface CategoryIconProps {
+  icon: string
+  color: string
+  size?: 'sm' | 'md' | 'lg'
+  className?: string
+}
+
+const SIZES = {
+  sm: { box: 'h-8 w-8', icon: 16 },
+  md: { box: 'h-10 w-10', icon: 20 },
+  lg: { box: 'h-12 w-12', icon: 24 },
+} as const
+
+/** Ikon kategori di dalam lingkaran berwarna. */
+export function CategoryIcon({ icon, color, size = 'md', className = '' }: CategoryIconProps) {
+  const { Icon } = CATEGORY_ICONS[icon] ?? CATEGORY_ICONS.ellipsis
+  const s = SIZES[size]
+  return (
+    <span
+      className={`inline-flex shrink-0 items-center justify-center rounded-full ${s.box} ${className}`}
+      style={{ backgroundColor: `${color}22`, color }}
+      aria-hidden="true"
+    >
+      <Icon size={s.icon} strokeWidth={2.2} />
+    </span>
+  )
+}
