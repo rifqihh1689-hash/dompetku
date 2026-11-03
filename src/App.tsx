@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { useRoute, type Route } from './app/router'
 import { BottomNav } from './components/BottomNav'
 import { ComingSoon } from './components/ComingSoon'
 import { ConfirmProvider } from './components/ConfirmProvider'
 import { Fab } from './components/Fab'
 import { ToastProvider } from './components/Toast'
+import { BudgetPage } from './features/budget/BudgetPage'
+import { useBudgetWarnings } from './features/budget/useBudgetWarnings'
 import { DashboardPage } from './features/dashboard/DashboardPage'
 import { SettingsPage } from './features/settings/SettingsPage'
 import { useTransactionEditor } from './features/transactions/editor-context'
@@ -26,7 +28,7 @@ function Page({ route, month, onMonthChange }: PageProps) {
     case 'riwayat':
       return <HistoryPage />
     case 'anggaran':
-      return <ComingSoon title="Anggaran" />
+      return <BudgetPage month={month} onMonthChange={onMonthChange} />
     case 'berulang':
       return <ComingSoon title="Transaksi Berulang" />
     case 'pengaturan':
@@ -50,13 +52,19 @@ function Shell() {
   )
 }
 
+/** Editor transaksi yang menampilkan peringatan anggaran setelah pengeluaran disimpan. */
+function EditorWithBudgetWarnings({ children }: { children: ReactNode }) {
+  const onSaved = useBudgetWarnings()
+  return <TransactionEditorProvider onSaved={onSaved}>{children}</TransactionEditorProvider>
+}
+
 export default function App() {
   return (
     <ToastProvider>
       <ConfirmProvider>
-        <TransactionEditorProvider>
+        <EditorWithBudgetWarnings>
           <Shell />
-        </TransactionEditorProvider>
+        </EditorWithBudgetWarnings>
       </ConfirmProvider>
     </ToastProvider>
   )

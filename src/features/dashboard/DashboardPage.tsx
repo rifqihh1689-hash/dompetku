@@ -11,6 +11,7 @@ import type { MonthKey } from '../../types'
 import { useTransactionEditor } from '../transactions/editor-context'
 import { TransactionItem } from '../transactions/TransactionItem'
 import { formatDateShort } from '../../lib/date'
+import { BudgetAlerts } from '../budget/BudgetAlerts'
 import { BalanceCard } from './BalanceCard'
 import { CategoryBreakdown } from './CategoryBreakdown'
 import { DailyTrendCard } from './DailyTrendCard'
@@ -48,6 +49,7 @@ export function DashboardPage({ month, onMonthChange }: DashboardPageProps) {
       <PageHeader title="Dompetku" subtitle="Ringkasan keuangan bulanan" />
       <MonthSwitcher month={month} onChange={onMonthChange} />
       <BalanceCard summary={summary} totalBalance={totalBalance} />
+      <BudgetAlerts month={month} />
 
       <CategoryBreakdown slices={slices} total={summary.expense} />
       <DailyTrendCard points={points} />
