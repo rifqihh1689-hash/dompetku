@@ -2,7 +2,11 @@
   "name": "dompetku",
   "private": true,
   "version": "1.0.0",
+  "description": "Dompetku — aplikasi pencatat keuangan pribadi (PWA, offline, tanpa server)",
   "type": "module",
+  "engines": {
+    "node": "^22.22.2 || >=24.15.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -44,6 +48,5 @@
     "vite-plugin-pwa": "^2.0.0",
     "vitest": "^5.1.0",
     "workbox-window": "^7.4.1"
-  },
-  "description": "Dompetku — aplikasi pencatat keuangan pribadi (PWA, offline, tanpa server)"
+  }
 }
