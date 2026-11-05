@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../../db/db'
 import { resetDatabase } from '../../test/db-utils'
 import { makeTx } from '../../test/fixtures'
-import { addCategory } from '../categories/repository'
+import { DEFAULT_CATEGORIES } from '../categories/defaults'
+import { addCategory, getCategories } from '../categories/repository'
 import { setBudget } from '../budget/repository'
 import { addRecurringRule } from '../recurring/repository'
 import { BACKUP_VERSION, backupFileName, createBackup, escapeCsvField, parseBackup, serializeBackup, transactionsToCsv } from './backup'
@@ -38,8 +39,8 @@ describe('parseBackup', () => {
       version: 1,
       exportedAt: '2026-11-03T00:00:00.000Z',
       data: {
-        transactions: [{ id: 'a', amount: 1000, type: 'expense', categoryId: 'cat-makan', date: '2026-11-03' }],
-        budgets: [{ id: 'apa-saja', month: '2026-11', categoryId: 'cat-makan', amount: 5000 }],
+        transactions: [{ id: 'a', amount: 1000, type: 'expense', categoryId: '#cat-makan', date: '2026-11-03' }],
+        budgets: [{ id: 'apa-saja', month: '2026-11', categoryId: '#cat-makan', amount: 5000 }],
       },
     })
     const result = parseBackup(text)
@@ -49,26 +50,26 @@ describe('parseBackup', () => {
       id: 'a',
       amount: 1000,
       type: 'expense',
-      categoryId: 'cat-makan',
+      categoryId: '#cat-makan',
       date: '2026-11-03',
       note: '',
       createdAt: 0,
       updatedAt: 0,
     })
-    expect(result.backup.data.budgets[0].id).toBe('2026-11:cat-makan')
+    expect(result.backup.data.budgets[0].id).toBe('#2026-11:#cat-makan')
     expect(result.backup.data.categories).toEqual([])
   })
 })
 
 describe('CSV', () => {
-  const names: Record<string, string> = { 'cat-makan': 'Makan', 'cat-gaji': 'Gaji' }
+  const names: Record<string, string> = { '#cat-makan': 'Makan', '#cat-gaji': 'Gaji' }
   const getName = (id: string) => names[id] ?? 'Tanpa kategori'
 
   it('membuat header dan baris berurutan tanggal dengan pemisah titik koma', () => {
     const csv = transactionsToCsv(
       [
-        makeTx({ date: '2026-11-03', amount: 25000, note: 'Nasi goreng', categoryId: 'cat-makan' }),
-        makeTx({ date: '2026-11-01', amount: 8500000, type: 'income', categoryId: 'cat-gaji' }),
+        makeTx({ date: '2026-11-03', amount: 25000, note: 'Nasi goreng', categoryId: '#cat-makan' }),
+        makeTx({ date: '2026-11-01', amount: 8500000, type: 'income', categoryId: '#cat-gaji' }),
       ],
       getName,
     )
@@ -88,7 +89,7 @@ describe('CSV', () => {
   })
 
   it('mencegah teks dibaca sebagai rumus oleh Excel', () => {
-    const csv = transactionsToCsv([makeTx({ note: '=HYPERLINK("x")', categoryId: 'cat-makan' })], getName, ',')
+    const csv = transactionsToCsv([makeTx({ note: '=HYPERLINK("x")', categoryId: '#cat-makan' })], getName, ',')
     expect(csv.split('\r\n')[1]).toBe(`2026-11-03,Pengeluaran,Makan,10000,"'=HYPERLINK(""x"")"`)
   })
 
@@ -102,12 +103,15 @@ describe('export & import database', () => {
 
   async function seed() {
     const kopi = await addCategory({ name: 'Kopi', icon: 'coffee', color: '#78350f', kind: 'expense' })
-    await db.transactions.bulkAdd([makeTx({ id: 't1', categoryId: kopi.id }), makeTx({ id: 't2', type: 'income', categoryId: 'cat-gaji' })])
+    await db.transactions.bulkAdd([
+      makeTx({ id: 't1', categoryId: kopi.id }),
+      makeTx({ id: 't2', type: 'income', categoryId: '#cat-gaji' }),
+    ])
     await setBudget('2026-11', kopi.id, 200_000)
     await addRecurringRule({
       amount: 100_000,
       type: 'expense',
-      categoryId: 'cat-tagihan',
+      categoryId: '#cat-tagihan',
       note: 'Internet',
       dayOfMonth: 10,
       startMonth: '2026-11',
@@ -122,7 +126,7 @@ describe('export & import database', () => {
 
     await clearAllData()
     expect(await db.transactions.count()).toBe(0)
-    expect(await db.categories.count()).toBe(8)
+    expect(await getCategories()).toHaveLength(8)
 
     const parsed = parseBackup(text)
     if (!parsed.ok) throw new Error(parsed.error)
@@ -130,7 +134,9 @@ describe('export & import database', () => {
 
     const after = await exportBackup(new Date('2026-11-03T10:00:00Z'))
     expect(after).toEqual(before)
-    expect(after.data.categories).toHaveLength(9)
+    // Hanya kategori buatan pengguna yang disimpan; kategori bawaan tersirat.
+    expect(after.data.categories.map((c) => c.name)).toEqual(['Kopi'])
+    expect(await getCategories()).toHaveLength(9)
     expect(after.data.transactions).toHaveLength(2)
     expect(after.data.budgets).toHaveLength(1)
     expect(after.data.recurring).toHaveLength(1)
@@ -144,10 +150,33 @@ describe('export & import database', () => {
     expect(Object.fromEntries(all.map((t) => [t.id, t.amount]))).toEqual({ lama: 1, sama: 99, baru: 3 })
   })
 
-  it('mode ganti menghapus data lama & tetap menyediakan kategori "Lainnya"', async () => {
+  it('mode ganti menghapus data lama; kategori bawaan tetap tersedia', async () => {
     await seed()
     await importBackup(createBackup(emptyData), 'replace')
     expect(await db.transactions.count()).toBe(0)
-    expect((await db.categories.toArray()).map((c) => c.id)).toEqual(['cat-lainnya'])
+    expect(await db.categories.count()).toBe(0)
+    expect((await getCategories()).map((c) => c.name)).toContain('Lainnya')
+  })
+})
+
+describe('kompatibilitas backup lama (v1)', () => {
+  it('mengonversi ID kategori bawaan lama', () => {
+    const legacyCategories = DEFAULT_CATEGORIES.map((c) => ({ ...c, id: c.id.slice(1) }))
+    const text = JSON.stringify({
+      app: 'dompetku',
+      version: 1,
+      exportedAt: '2026-11-01T00:00:00.000Z',
+      data: {
+        categories: legacyCategories,
+        transactions: [makeTx({ id: 'x', categoryId: 'cat-gaji', type: 'income' })],
+        budgets: [{ id: '2026-11:cat-makan', month: '2026-11', categoryId: 'cat-makan', amount: 1000 }],
+        recurring: [],
+      },
+    })
+    const result = parseBackup(text)
+    if (!result.ok) throw new Error(result.error)
+    expect(result.backup.data.categories).toEqual([])
+    expect(result.backup.data.transactions[0].categoryId).toBe('#cat-gaji')
+    expect(result.backup.data.budgets[0]).toEqual({ id: '#2026-11:#cat-makan', month: '2026-11', categoryId: '#cat-makan', amount: 1000 })
   })
 })

@@ -1,19 +1,25 @@
 import { PageHeader } from '../../components/PageHeader'
+import { cloudEnabled } from '../../db/db'
 import { BackupSection } from '../backup/BackupSection'
 import { CategoryManager } from '../categories/CategoryManager'
+import { MbappeSection } from '../mbappe/MbappeSection'
 import { InstallSection } from '../pwa/InstallSection'
+import { SyncSection } from '../sync/SyncSection'
 import { ThemeSection } from './ThemeSection'
 
 export function SettingsPage() {
   return (
     <div className="space-y-4">
       <PageHeader title="Pengaturan" />
+      <SyncSection />
       <ThemeSection />
       <InstallSection />
       <CategoryManager />
+      <MbappeSection />
       <BackupSection />
       <p className="pt-2 text-center text-xs text-slate-400 dark:text-slate-500">
-        Dompetku v{__APP_VERSION__} · Semua data tersimpan di perangkat ini, tanpa server.
+        Dompetku v{__APP_VERSION__} · Data tersimpan di perangkat ini
+        {cloudEnabled ? ' dan, bila masuk, tersinkron lewat Dexie Cloud' : ', tanpa server'}.
       </p>
     </div>
   )

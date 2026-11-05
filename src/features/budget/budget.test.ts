@@ -30,17 +30,17 @@ describe('budgetLevel', () => {
 
 describe('computeBudgetUsage', () => {
   const budgets = [
-    { id: '2026-11:cat-makan', month: '2026-11', categoryId: 'cat-makan', amount: 1_000_000 },
-    { id: '2026-11:cat-hiburan', month: '2026-11', categoryId: 'cat-hiburan', amount: 200_000 },
-    { id: '2026-11:cat-transportasi', month: '2026-11', categoryId: 'cat-transportasi', amount: 500_000 },
+    { id: '#2026-11:#cat-makan', month: '2026-11', categoryId: '#cat-makan', amount: 1_000_000 },
+    { id: '#2026-11:#cat-hiburan', month: '2026-11', categoryId: '#cat-hiburan', amount: 200_000 },
+    { id: '#2026-11:#cat-transportasi', month: '2026-11', categoryId: '#cat-transportasi', amount: 500_000 },
   ]
   const transactions = [
-    makeTx({ categoryId: 'cat-makan', amount: 850_000, date: '2026-11-10' }),
-    makeTx({ categoryId: 'cat-hiburan', amount: 250_000, date: '2026-11-05' }),
-    makeTx({ categoryId: 'cat-transportasi', amount: 100_000, date: '2026-11-02' }),
+    makeTx({ categoryId: '#cat-makan', amount: 850_000, date: '2026-11-10' }),
+    makeTx({ categoryId: '#cat-hiburan', amount: 250_000, date: '2026-11-05' }),
+    makeTx({ categoryId: '#cat-transportasi', amount: 100_000, date: '2026-11-02' }),
     // diabaikan: bulan lain & pemasukan
-    makeTx({ categoryId: 'cat-makan', amount: 900_000, date: '2026-10-31' }),
-    makeTx({ categoryId: 'cat-makan', amount: 900_000, date: '2026-11-01', type: 'income' }),
+    makeTx({ categoryId: '#cat-makan', amount: 900_000, date: '2026-10-31' }),
+    makeTx({ categoryId: '#cat-makan', amount: 900_000, date: '2026-11-01', type: 'income' }),
   ]
 
   it('menghitung terpakai, sisa, dan status, diurutkan dari paling kritis', () => {
@@ -73,19 +73,19 @@ describe('repository anggaran', () => {
     await setBudget('2026-11', makan.id, 500_000)
     await setBudget('2026-11', makan.id, 750_000)
     const all = await db.budgets.toArray()
-    expect(all).toEqual([{ id: '2026-11:cat-makan', month: '2026-11', categoryId: 'cat-makan', amount: 750_000 }])
+    expect(all).toEqual([{ id: '#2026-11:#cat-makan', month: '2026-11', categoryId: '#cat-makan', amount: 750_000 }])
     await expect(setBudget('2026-11', makan.id, 0)).rejects.toThrow()
   })
 
   it('menyalin anggaran ke bulan berikutnya tanpa menimpa', async () => {
-    await setBudget('2026-10', 'cat-makan', 500_000)
-    await setBudget('2026-10', 'cat-hiburan', 200_000)
-    await setBudget('2026-11', 'cat-hiburan', 300_000)
+    await setBudget('2026-10', '#cat-makan', 500_000)
+    await setBudget('2026-10', '#cat-hiburan', 200_000)
+    await setBudget('2026-11', '#cat-hiburan', 300_000)
     expect(await copyBudgets('2026-10', '2026-11')).toBe(1)
     const nov = await db.budgets.where('month').equals('2026-11').toArray()
     expect(nov.map((b) => [b.categoryId, b.amount]).sort()).toEqual([
-      ['cat-hiburan', 300_000],
-      ['cat-makan', 500_000],
+      ['#cat-hiburan', 300_000],
+      ['#cat-makan', 500_000],
     ])
   })
 

@@ -37,7 +37,7 @@ describe('Aplikasi Dompetku', () => {
 
   it('memperingatkan saat anggaran mencapai 80% dan saat terlampaui', async () => {
     const user = userEvent.setup()
-    await setBudget(currentMonth(), 'cat-makan', 100_000)
+    await setBudget(currentMonth(), '#cat-makan', 100_000)
     render(<App />)
     await screen.findByText('Belum ada transaksi bulan ini')
 

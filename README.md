@@ -1,6 +1,6 @@
 # Dompetku
 
-**Dompetku** adalah aplikasi web pencatat keuangan pribadi untuk mencatat pemasukan & pengeluaran harian. Bisa dipasang di HP seperti aplikasi biasa (PWA), tetap bekerja **tanpa internet**, dan **tanpa server** — semua data tersimpan di perangkatmu sendiri (IndexedDB). Di-hosting gratis di GitHub Pages.
+**Dompetku** adalah aplikasi web pencatat keuangan pribadi untuk mencatat pemasukan & pengeluaran harian. Bisa dipasang di HP seperti aplikasi biasa (PWA), tetap bekerja **tanpa internet**, dan data tersimpan di perangkatmu sendiri (IndexedDB). Opsional: **sinkronisasi HP & laptop** lewat login email. Di-hosting gratis di GitHub Pages.
 
 🔗 **Coba langsung:** <https://rifqihh1689-hash.github.io/dompetku/> (aktif setelah GitHub Pages dinyalakan — lihat [Deploy ke GitHub Pages](#deploy-ke-github-pages))
 
@@ -32,6 +32,7 @@
 - **Format Rupiah & Bahasa Indonesia** — `Rp 1.250.000`, nama hari/bulan Indonesia, seluruh antarmuka berbahasa Indonesia.
 - **Mobile-first & satu tangan** — navigasi bawah, tombol tambah transaksi mengambang (FAB) di kanan bawah, form dalam _bottom sheet_.
 - **PWA & offline** — bisa dipasang di layar utama HP, seluruh aset di-cache sehingga tetap jalan tanpa internet, dan ada notifikasi saat versi baru tersedia.
+- **Sinkronisasi HP & laptop (opsional)** — masuk dengan email (kode OTP, tanpa kata sandi) dan data tersambung otomatis di semua perangkat; tetap bisa dipakai offline. Tanpa login, data hanya di perangkat itu. Lihat [Sinkronisasi HP & laptop](#sinkronisasi-hp--laptop).
 
 ## Teknologi
 
@@ -40,6 +41,7 @@
 | UI            | [React](https://react.dev) + [TypeScript](https://www.typescriptlang.org), dibangun dengan [Vite](https://vite.dev)                                 |
 | Tampilan      | [Tailwind CSS](https://tailwindcss.com), ikon [Lucide](https://lucide.dev)                                                                          |
 | Penyimpanan   | IndexedDB lewat [Dexie](https://dexie.org) (`useLiveQuery` untuk UI reaktif)                                                                        |
+| Sinkronisasi  | [Dexie Cloud](https://dexie.org/cloud/) (opsional, dimuat hanya bila dikonfigurasi)                                                                 |
 | Grafik        | [Recharts](https://recharts.org) (dimuat _lazy_ agar halaman awal ringan)                                                                           |
 | PWA           | [vite-plugin-pwa](https://vite-pwa-org.netlify.app) (Workbox)                                                                                       |
 | Tes           | [Vitest](https://vitest.dev) + [React Testing Library](https://testing-library.com) + [fake-indexeddb](https://github.com/dumbmatter/fakeIndexedDB) |
@@ -97,6 +99,8 @@ src/
 │   ├── recurring/           # aturan transaksi berulang & pembuatan otomatis
 │   ├── backup/              # export/import JSON, export CSV
 │   ├── settings/            # halaman pengaturan & tema gelap/terang
+│   ├── sync/                # login email & status sinkronisasi (Dexie Cloud)
+│   ├── mbappe/              # tukar data dua arah dengan Markas Mbappe
 │   └── pwa/                 # pembaruan service worker & tombol pasang aplikasi
 ├── lib/                     # utilitas format Rupiah, tanggal Indonesia, unduh file
 └── types.ts                 # tipe data utama
@@ -137,13 +141,68 @@ Buka alamat aplikasi di browser HP, lalu:
 
 Setelah terpasang, Dompetku terbuka layar penuh seperti aplikasi biasa dan bisa dipakai tanpa internet. Saat ada versi baru, akan muncul notifikasi **Perbarui**.
 
+## Sinkronisasi HP & laptop
+
+Sinkronisasi memakai [Dexie Cloud](https://dexie.org/cloud/). Bersifat **opsional**: tanpa login, Dompetku bekerja sepenuhnya lokal seperti biasa.
+
+### Cara memakai (setiap pengguna)
+
+1. Buka Dompetku → **Pengaturan** → bagian **Sinkronisasi HP & laptop** → **Masuk / Daftar dengan email**.
+2. Masukkan email → **Kirim kode** → buka email, salin kodenya → **Masuk**.
+3. Lakukan hal yang sama di perangkat lain dengan **email yang sama**. Data akan tersambung otomatis.
+
+Catatan:
+
+- Data yang sudah ada di perangkat ikut terunggah saat pertama kali masuk.
+- Tetap bisa dipakai offline; perubahan dikirim otomatis saat online. Ikon awan di Beranda menunjukkan status sinkronisasi.
+- **Keluar** menghapus data dari perangkat itu saja; data tetap aman di cloud dan kembali saat masuk lagi.
+- Setiap email punya data sendiri. Pengguna lain tidak bisa melihat datamu.
+
+### Menyiapkan server sinkronisasi (sekali, oleh pemilik repo)
+
+Butuh Node.js di komputer. Jalankan di folder kosong (di luar folder proyek):
+
+1. Buat database Dexie Cloud (masukkan email pemilik lalu kode yang dikirim ke email):
+
+   ```bash
+   npx dexie-cloud create
+   ```
+
+   Perintah ini membuat `dexie-cloud.json` (berisi alamat database, mis. `https://zxxxxxxx.dexie.cloud`) dan `dexie-cloud.key` (**rahasia — jangan dibagikan atau di-commit**).
+
+2. Izinkan alamat aplikasi mengakses database:
+
+   ```bash
+   npx dexie-cloud whitelist https://rifqihh1689-hash.github.io
+   ```
+
+   ```bash
+   npx dexie-cloud whitelist http://localhost:5173
+   ```
+
+3. Salin `.env.example` menjadi `.env` di proyek ini, isi `VITE_DEXIE_CLOUD_URL` dengan alamat database dari langkah 1, lalu commit & push ke `main`. Alamat ini bukan rahasia.
+4. **Jadikan akun permanen.** Pengguna baru berstatus _uji coba_ (30 hari aktif); setelah itu sinkronisasi berhenti. Paket gratis Dexie Cloud menyediakan **3 akun permanen (production)** — atur di aplikasi manajemen Dexie Cloud (Dexie Cloud Manager). Lihat [harga Dexie Cloud](https://dexie.org/cloud/pricing).
+
+> Jangan mengganti alamat database setelah dipakai: data di cloud lama tidak ikut pindah.
+
+## Sambungan Markas Mbappe
+
+Dompetku bisa bertukar data dua arah dengan **Markas Mbappe** (aplikasi Dana Jembatan & pemasukan sampingan di claude.ai) lewat file — tanpa server dan tanpa internet.
+
+- **Markas Mbappe → Dompetku (pemasukan):** di Markas Mbappe, tab **Dana** → **Sambungan Dompetku** → **Kirim … pemasukan ke Dompetku**. Lalu di Dompetku: **Pengaturan** → **Sambungan Markas Mbappe** → **Terima pemasukan dari Markas Mbappe** dan pilih file itu. Setiap pemasukan yang sudah diterima di Markas Mbappe menjadi **Pemasukan** dengan kategori per sumber (mis. "Tentir 1:1 (Mbappe)"). Aman diulang: tidak dobel, dan pemasukan yang dihapus di Markas Mbappe ikut terhapus. Transaksi Dompetku lainnya tidak berubah.
+- **Dompetku → Markas Mbappe (ringkasan):** di Dompetku, **Pengaturan** → **Sambungan Markas Mbappe** → **Unduh ringkasan** (atau **Salin ringkasan**). Lalu di Markas Mbappe: **Sambungan Dompetku** → **Impor ringkasan Dompetku** (atau tempel isinya). Markas Mbappe menampilkan saldo, pengeluaran per bulan, dan perkiraan **Dana Jembatan cukup untuk berapa bulan**. Ringkasan hanya berisi angka agregat, tanpa rincian transaksi, dan tidak ditambahkan ke Dana Jembatan.
+
+Contoh kedua format file ada di [`src/features/mbappe/__fixtures__`](src/features/mbappe/__fixtures__) dan diuji otomatis.
+
 ## Data & privasi
 
-- Semua data hanya disimpan di **browser/perangkat ini** (IndexedDB). Tidak ada server, akun, atau pelacakan.
-- Data **tidak tersinkron** antar-perangkat atau antar-browser. Untuk pindah HP: **Pengaturan → Export JSON** di perangkat lama, lalu **Import JSON** di perangkat baru.
-- Menghapus data situs/browser juga menghapus data Dompetku. Aplikasi meminta penyimpanan persisten, namun tetap **buat backup secara berkala**. Di iPhone, pasang ke Layar Utama agar data tidak dibersihkan otomatis oleh Safari.
+- Tanpa login, semua data hanya disimpan di **browser/perangkat ini** (IndexedDB). Tidak ada akun atau pelacakan.
+- Bila masuk untuk sinkronisasi, salinan data disimpan di server **Dexie Cloud** dan hanya bisa diakses dengan email tersebut.
+- Tanpa sinkronisasi, untuk pindah HP: **Pengaturan → Export JSON** di perangkat lama, lalu **Import JSON** di perangkat baru.
+- Menghapus data situs/browser juga menghapus data lokal Dompetku. Aplikasi meminta penyimpanan persisten, namun tetap **buat backup secara berkala**. Di iPhone, pasang ke Layar Utama agar data tidak dibersihkan otomatis oleh Safari.
+- **Hapus semua data** dan **Import → Ganti semua** saat sedang masuk juga berlaku untuk data di cloud (semua perangkat).
 
 ### Format file
 
-- **Backup JSON** — `{ "app": "dompetku", "version": 1, "exportedAt": "…", "data": { "categories": [], "transactions": [], "budgets": [], "recurring": [] } }`. Nominal disimpan sebagai bilangan bulat Rupiah, tanggal sebagai `YYYY-MM-DD`.
+- **Backup JSON** — `{ "app": "dompetku", "version": 2, "exportedAt": "…", "data": { "categories": [], "transactions": [], "budgets": [], "recurring": [] } }`. Nominal disimpan sebagai bilangan bulat Rupiah, tanggal sebagai `YYYY-MM-DD`. `categories` hanya berisi kategori buatan sendiri dan perubahan atas kategori bawaan. Backup versi 1 tetap bisa diimpor.
 - **CSV** — kolom `Tanggal;Jenis;Kategori;Jumlah;Catatan`, UTF-8 dengan BOM agar huruf terbaca benar di Excel. Kolom _Jumlah_ berupa angka polos sehingga bisa langsung dijumlahkan.

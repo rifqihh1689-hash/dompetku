@@ -25,10 +25,10 @@ describe('expenseByCategory', () => {
   it('mengelompokkan pengeluaran per kategori dan mengabaikan pemasukan', () => {
     const slices = expenseByCategory(
       [
-        makeTx({ categoryId: 'cat-makan', amount: 30000 }),
-        makeTx({ categoryId: 'cat-makan', amount: 20000 }),
-        makeTx({ categoryId: 'cat-transportasi', amount: 150000 }),
-        makeTx({ categoryId: 'cat-gaji', type: 'income', amount: 9_000_000 }),
+        makeTx({ categoryId: '#cat-makan', amount: 30000 }),
+        makeTx({ categoryId: '#cat-makan', amount: 20000 }),
+        makeTx({ categoryId: '#cat-transportasi', amount: 150000 }),
+        makeTx({ categoryId: '#cat-gaji', type: 'income', amount: 9_000_000 }),
       ],
       getDefaultCategory,
     )

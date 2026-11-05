@@ -1,8 +1,17 @@
 import { isValidISODate, isValidMonthKey, todayISO } from '../../lib/date'
 import type { Budget, Category, CategoryKind, RecurringRule, Transaction, TransactionType } from '../../types'
+import { budgetId } from '../budget/budget'
+import { migrateLegacyCategoryId } from '../categories/defaults'
+import { normalizeCategoryRows } from '../categories/merge'
 
 export const BACKUP_APP = 'dompetku'
-export const BACKUP_VERSION = 1
+/**
+ * Versi format backup.
+ * - v1: ID kategori bawaan "cat-…", semua kategori bawaan disimpan.
+ * - v2: ID kategori bawaan "#cat-…", hanya kategori buatan pengguna & perubahan kategori bawaan.
+ * Backup v1 tetap bisa diimpor (otomatis dikonversi).
+ */
+export const BACKUP_VERSION = 2
 
 export interface BackupData {
   categories: Category[]
@@ -15,6 +24,8 @@ export interface BackupFile {
   app: typeof BACKUP_APP
   version: number
   exportedAt: string
+  /** Asal file bila bukan dari Dompetku sendiri, mis. `markas-mbappe`. */
+  source?: string
   data: BackupData
 }
 
@@ -58,6 +69,7 @@ function parseCategory(v: unknown): Category {
     kind: v.kind,
     builtIn: v.builtIn === true,
     createdAt: toNumber(v.createdAt, 0),
+    ...(v.deleted === true ? { deleted: true } : {}),
   }
 }
 
@@ -72,7 +84,7 @@ function parseTransaction(v: unknown): Transaction {
     id: v.id,
     amount: v.amount,
     type: v.type,
-    categoryId: v.categoryId,
+    categoryId: migrateLegacyCategoryId(v.categoryId),
     date: v.date,
     note: toNote(v.note),
     createdAt: toNumber(v.createdAt, 0),
@@ -88,7 +100,8 @@ function parseBudget(v: unknown): Budget {
   if (!isNonEmptyString(v.categoryId)) throw new BackupError('kategori kosong')
   if (!isPositiveInt(v.amount)) throw new BackupError('jumlah harus bilangan bulat positif')
   // ID selalu dibentuk ulang agar aturan "satu anggaran per kategori per bulan" terjaga.
-  return { id: `${v.month}:${v.categoryId}`, month: v.month, categoryId: v.categoryId, amount: v.amount }
+  const categoryId = migrateLegacyCategoryId(v.categoryId)
+  return { id: budgetId(v.month, categoryId), month: v.month, categoryId, amount: v.amount }
 }
 
 function parseRecurring(v: unknown): RecurringRule {
@@ -106,7 +119,7 @@ function parseRecurring(v: unknown): RecurringRule {
     id: v.id,
     amount: v.amount,
     type: v.type,
-    categoryId: v.categoryId,
+    categoryId: migrateLegacyCategoryId(v.categoryId),
     note: toNote(v.note),
     dayOfMonth: v.dayOfMonth,
     startMonth: v.startMonth,
@@ -146,14 +159,20 @@ export function parseBackup(text: string): ParseResult {
   }
   try {
     const data: BackupData = {
-      categories: parseList(raw.data.categories, 'Kategori', parseCategory),
+      categories: normalizeCategoryRows(parseList(raw.data.categories, 'Kategori', parseCategory)),
       transactions: parseList(raw.data.transactions, 'Transaksi', parseTransaction),
       budgets: parseList(raw.data.budgets, 'Anggaran', parseBudget),
       recurring: parseList(raw.data.recurring, 'Transaksi berulang', parseRecurring),
     }
     return {
       ok: true,
-      backup: { app: BACKUP_APP, version: raw.version, exportedAt: typeof raw.exportedAt === 'string' ? raw.exportedAt : '', data },
+      backup: {
+        app: BACKUP_APP,
+        version: raw.version,
+        exportedAt: typeof raw.exportedAt === 'string' ? raw.exportedAt : '',
+        ...(typeof raw.source === 'string' && raw.source ? { source: raw.source } : {}),
+        data,
+      },
     }
   } catch (e) {
     return { ok: false, error: e instanceof BackupError ? e.message : 'File backup rusak.' }

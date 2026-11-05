@@ -10,6 +10,8 @@ import { DashboardPage } from './features/dashboard/DashboardPage'
 import { PwaUpdater } from './features/pwa/PwaUpdater'
 import { RecurringPage } from './features/recurring/RecurringPage'
 import { useTheme } from './features/settings/theme'
+import { LoginDialog } from './features/sync/LoginDialog'
+import { cloudEnabled } from './db/db'
 import { ThemeContext } from './features/settings/theme-context'
 import { useRecurringGenerator } from './features/recurring/useRecurringGenerator'
 import { SettingsPage } from './features/settings/SettingsPage'
@@ -54,6 +56,7 @@ function Shell() {
       {route !== 'pengaturan' && <Fab onClick={() => openNew()} />}
       <BottomNav active={route} />
       <PwaUpdater />
+      {cloudEnabled && <LoginDialog />}
     </>
   )
 }

@@ -23,3 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 coverage
+
+# Dexie Cloud: file kunci rahasia dari `npx dexie-cloud create` — JANGAN di-commit
+dexie-cloud.key
+dexie-cloud.json
