@@ -8,6 +8,8 @@ import { cloudEnabled, db } from '../../db/db'
 import { downloadTextFile } from '../../lib/download'
 import { formatMonthLabel } from '../../lib/date'
 import { UNKNOWN_CATEGORY } from '../categories/defaults'
+import { isMbappeFile } from '../mbappe/import'
+import { useMbappeImport } from '../mbappe/useMbappeImport'
 import { getCategories } from '../categories/repository'
 import {
   backupFileName,
@@ -42,6 +44,7 @@ export function BackupSection() {
   const [csvMonth, setCsvMonth] = useState('')
   const [delimiter, setDelimiter] = useState<CsvDelimiter>(';')
   const ids = { csvMonth: useId(), delimiter: useId() }
+  const importMbappe = useMbappeImport()
 
   const handleExportJson = async () => {
     const backup = await exportBackup()
@@ -72,6 +75,11 @@ export function BackupSection() {
     const result = parseBackup(await file.text())
     if (!result.ok) {
       toast({ message: result.error, tone: 'error', duration: 6000 })
+      return
+    }
+    // Kiriman Markas Mbappe hanya boleh digabung (tidak pernah "ganti semua").
+    if (isMbappeFile(result.backup)) {
+      await importMbappe(result.backup)
       return
     }
     setPending(result.backup)

@@ -7,6 +7,7 @@ import { addMonths, currentMonth } from '../lib/date'
 import { resetDatabase } from '../test/db-utils'
 import { makeTx } from '../test/fixtures'
 import { createBackup, serializeBackup } from './backup/backup'
+import kiriman from './mbappe/__fixtures__/kiriman-markas-mbappe.json'
 
 function goTo(hash: string) {
   act(() => {
@@ -89,5 +90,34 @@ describe('Integrasi halaman', () => {
     await user.click(await screen.findByTestId('fab'))
     const form = await screen.findByRole('dialog', { name: 'Tambah Transaksi' })
     expect(within(form).getByRole('radio', { name: 'Kopi' })).toBeInTheDocument()
+  })
+
+  it('menerima pemasukan dari Markas Mbappe di Pengaturan dan tidak dobel saat diulang', async () => {
+    const user = userEvent.setup()
+    goTo('#/pengaturan')
+    render(<App />)
+    await screen.findByRole('heading', { name: 'Sambungan Markas Mbappe' })
+    const file = () => new File([JSON.stringify(kiriman)], 'mbappe-ke-dompetku.json', { type: 'application/json' })
+
+    await user.upload(screen.getByTestId('mbappe-input'), file())
+    const dialog = await screen.findByRole('alertdialog', { name: 'Terima pemasukan dari Markas Mbappe?' })
+    await user.click(within(dialog).getByRole('button', { name: 'Terima' }))
+    expect(await screen.findByText('Pemasukan Markas Mbappe diterima: 3 baru, 0 diperbarui.')).toBeInTheDocument()
+    expect(await db.transactions.count()).toBe(3)
+
+    await user.upload(screen.getByTestId('mbappe-input'), file())
+    await user.click(within(await screen.findByRole('alertdialog')).getByRole('button', { name: 'Terima' }))
+    expect(await screen.findByText('Pemasukan Markas Mbappe diterima: 0 baru, 3 diperbarui.')).toBeInTheDocument()
+    expect(await db.transactions.count()).toBe(3)
+  })
+
+  it('file Markas Mbappe lewat Import JSON tidak menawarkan "Ganti semua"', async () => {
+    const user = userEvent.setup()
+    goTo('#/pengaturan')
+    render(<App />)
+    await screen.findByRole('heading', { name: 'Backup & Restore' })
+    await user.upload(screen.getByTestId('import-input'), new File([JSON.stringify(kiriman)], 'x.json', { type: 'application/json' }))
+    expect(await screen.findByRole('alertdialog', { name: 'Terima pemasukan dari Markas Mbappe?' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Ganti semua data' })).not.toBeInTheDocument()
   })
 })

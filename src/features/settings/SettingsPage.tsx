@@ -2,6 +2,7 @@ import { PageHeader } from '../../components/PageHeader'
 import { cloudEnabled } from '../../db/db'
 import { BackupSection } from '../backup/BackupSection'
 import { CategoryManager } from '../categories/CategoryManager'
+import { MbappeSection } from '../mbappe/MbappeSection'
 import { InstallSection } from '../pwa/InstallSection'
 import { SyncSection } from '../sync/SyncSection'
 import { ThemeSection } from './ThemeSection'
@@ -14,6 +15,7 @@ export function SettingsPage() {
       <ThemeSection />
       <InstallSection />
       <CategoryManager />
+      <MbappeSection />
       <BackupSection />
       <p className="pt-2 text-center text-xs text-slate-400 dark:text-slate-500">
         Dompetku v{__APP_VERSION__} · Data tersimpan di perangkat ini

@@ -1,0 +1,58 @@
+{
+  "app": "dompetku-ringkasan",
+  "version": 1,
+  "exportedAt": "2026-11-05T08:00:00.000Z",
+  "tanggal": "2026-11-05",
+  "saldo": 370000,
+  "bulanIni": {
+    "bulan": "2026-11",
+    "pemasukan": 300000,
+    "pengeluaran": 430000
+  },
+  "bulanan": [
+    {
+      "bulan": "2026-06",
+      "pemasukan": 0,
+      "pengeluaran": 0
+    },
+    {
+      "bulan": "2026-07",
+      "pemasukan": 0,
+      "pengeluaran": 0
+    },
+    {
+      "bulan": "2026-08",
+      "pemasukan": 0,
+      "pengeluaran": 1200000
+    },
+    {
+      "bulan": "2026-09",
+      "pemasukan": 0,
+      "pengeluaran": 1500000
+    },
+    {
+      "bulan": "2026-10",
+      "pemasukan": 5000000,
+      "pengeluaran": 1800000
+    },
+    {
+      "bulan": "2026-11",
+      "pemasukan": 300000,
+      "pengeluaran": 430000
+    }
+  ],
+  "rataPengeluaranBulanan": 1500000,
+  "dasarRata": "bulan-sebelumnya",
+  "pengeluaranTerbesar": [
+    {
+      "kategori": "Tagihan",
+      "total": 350000
+    },
+    {
+      "kategori": "Makan",
+      "total": 80000
+    }
+  ],
+  "pemasukanDariMbappe": 300000,
+  "jumlahTransaksi": 8
+}

@@ -1,0 +1,71 @@
+{
+  "app": "dompetku",
+  "version": 2,
+  "source": "markas-mbappe",
+  "exportedAt": "2026-11-05T08:00:00.000Z",
+  "data": {
+    "categories": [
+      {
+        "id": "#mbappe-tentir",
+        "name": "Tentir 1:1 (Mbappe)",
+        "icon": "graduation-cap",
+        "color": "#2a78d6",
+        "kind": "income",
+        "builtIn": false,
+        "createdAt": 1000
+      },
+      {
+        "id": "#mbappe-riset",
+        "name": "Meja Riset (Mbappe)",
+        "icon": "briefcase",
+        "color": "#6250d6",
+        "kind": "income",
+        "builtIn": false,
+        "createdAt": 1001
+      },
+      {
+        "id": "#mbappe-lain",
+        "name": "Lainnya (Mbappe)",
+        "icon": "banknote",
+        "color": "#64748b",
+        "kind": "income",
+        "builtIn": false,
+        "createdAt": 1002
+      }
+    ],
+    "transactions": [
+      {
+        "id": "mbappe-kas-kas_a1",
+        "amount": 300000,
+        "type": "income",
+        "categoryId": "#mbappe-tentir",
+        "date": "2026-11-01",
+        "note": "Tentir 3 sesi",
+        "createdAt": 1793527200000,
+        "updatedAt": 1793527200000
+      },
+      {
+        "id": "mbappe-kas-riset_r1_dp",
+        "amount": 750000,
+        "type": "income",
+        "categoryId": "#mbappe-riset",
+        "date": "2026-11-03",
+        "note": "Meja Riset",
+        "createdAt": 0,
+        "updatedAt": 0
+      },
+      {
+        "id": "mbappe-kas-kas_lain",
+        "amount": 125000,
+        "type": "income",
+        "categoryId": "#mbappe-lain",
+        "date": "2026-10-20",
+        "note": "Jual buku",
+        "createdAt": 0,
+        "updatedAt": 0
+      }
+    ],
+    "budgets": [],
+    "recurring": []
+  }
+}

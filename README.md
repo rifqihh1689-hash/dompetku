@@ -100,6 +100,7 @@ src/
 │   ├── backup/              # export/import JSON, export CSV
 │   ├── settings/            # halaman pengaturan & tema gelap/terang
 │   ├── sync/                # login email & status sinkronisasi (Dexie Cloud)
+│   ├── mbappe/              # tukar data dua arah dengan Markas Mbappe
 │   └── pwa/                 # pembaruan service worker & tombol pasang aplikasi
 ├── lib/                     # utilitas format Rupiah, tanggal Indonesia, unduh file
 └── types.ts                 # tipe data utama
@@ -183,6 +184,15 @@ Butuh Node.js di komputer. Jalankan di folder kosong (di luar folder proyek):
 4. **Jadikan akun permanen.** Pengguna baru berstatus _uji coba_ (30 hari aktif); setelah itu sinkronisasi berhenti. Paket gratis Dexie Cloud menyediakan **3 akun permanen (production)** — atur di aplikasi manajemen Dexie Cloud (Dexie Cloud Manager). Lihat [harga Dexie Cloud](https://dexie.org/cloud/pricing).
 
 > Jangan mengganti alamat database setelah dipakai: data di cloud lama tidak ikut pindah.
+
+## Sambungan Markas Mbappe
+
+Dompetku bisa bertukar data dua arah dengan **Markas Mbappe** (aplikasi Dana Jembatan & pemasukan sampingan di claude.ai) lewat file — tanpa server dan tanpa internet.
+
+- **Markas Mbappe → Dompetku (pemasukan):** di Markas Mbappe, tab **Dana** → **Sambungan Dompetku** → **Kirim … pemasukan ke Dompetku**. Lalu di Dompetku: **Pengaturan** → **Sambungan Markas Mbappe** → **Terima pemasukan dari Markas Mbappe** dan pilih file itu. Setiap pemasukan yang sudah diterima di Markas Mbappe menjadi **Pemasukan** dengan kategori per sumber (mis. "Tentir 1:1 (Mbappe)"). Aman diulang: tidak dobel, dan pemasukan yang dihapus di Markas Mbappe ikut terhapus. Transaksi Dompetku lainnya tidak berubah.
+- **Dompetku → Markas Mbappe (ringkasan):** di Dompetku, **Pengaturan** → **Sambungan Markas Mbappe** → **Unduh ringkasan** (atau **Salin ringkasan**). Lalu di Markas Mbappe: **Sambungan Dompetku** → **Impor ringkasan Dompetku** (atau tempel isinya). Markas Mbappe menampilkan saldo, pengeluaran per bulan, dan perkiraan **Dana Jembatan cukup untuk berapa bulan**. Ringkasan hanya berisi angka agregat, tanpa rincian transaksi, dan tidak ditambahkan ke Dana Jembatan.
+
+Contoh kedua format file ada di [`src/features/mbappe/__fixtures__`](src/features/mbappe/__fixtures__) dan diuji otomatis.
 
 ## Data & privasi
 

@@ -24,6 +24,8 @@ export interface BackupFile {
   app: typeof BACKUP_APP
   version: number
   exportedAt: string
+  /** Asal file bila bukan dari Dompetku sendiri, mis. `markas-mbappe`. */
+  source?: string
   data: BackupData
 }
 
@@ -164,7 +166,13 @@ export function parseBackup(text: string): ParseResult {
     }
     return {
       ok: true,
-      backup: { app: BACKUP_APP, version: raw.version, exportedAt: typeof raw.exportedAt === 'string' ? raw.exportedAt : '', data },
+      backup: {
+        app: BACKUP_APP,
+        version: raw.version,
+        exportedAt: typeof raw.exportedAt === 'string' ? raw.exportedAt : '',
+        ...(typeof raw.source === 'string' && raw.source ? { source: raw.source } : {}),
+        data,
+      },
     }
   } catch (e) {
     return { ok: false, error: e instanceof BackupError ? e.message : 'File backup rusak.' }
